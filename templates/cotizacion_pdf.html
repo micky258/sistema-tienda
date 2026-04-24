@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<style>
+
+/* ================================================
+CONFIGURACIÓN GENERAL
+=============================================== */
+
+@page{
+margin:25px;
+}
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+font-size:11px;
+color:#000;
+line-height:1.4;
+}
+
+
+/* ================================================
+ENCABEZADO
+=============================================== */
+
+.encabezado{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.logo img{
+height:70px;
+}
+
+.datos-empresa{
+text-align:right;
+font-size:12px;
+}
+
+
+/* ================================================
+TITULO
+=============================================== */
+
+h2{
+text-align:center;
+margin:10px 0;
+font-size:18px;
+}
+
+
+/* ================================================
+SUBTITULOS
+=============================================== */
+
+.subtitulo{
+font-weight:bold;
+font-size:14px;
+margin-top:10px;
+margin-bottom:5px;
+text-transform:uppercase;
+}
+
+
+/* ================================================
+DATOS CLIENTE
+=============================================== */
+
+.datos-cliente{
+display:flex;
+justify-content:space-between;
+gap:40px;
+margin-bottom:10px;
+font-size:13px;
+}
+
+.col-izq{width:40%;}
+.col-centro{width:20%; text-align:center;}
+.col-der{
+width:35%;
+text-align:left;
+margin-left:70px;
+}
+
+.datos-cliente p{
+margin:2px 0;
+}
+
+
+/* ================================================
+TABLA PRODUCTOS
+=============================================== */
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:11px;
+}
+
+th,td{
+border:1px solid #000;
+padding:6px;
+}
+
+th{
+background:#f2f2f2;
+text-align:center;
+}
+
+.center{
+text-align:center;
+}
+
+.num{
+text-align:right;
+}
+
+tr{
+page-break-inside:avoid;
+}
+
+
+/* ================================================
+BLOQUE INFERIOR
+=============================================== */
+.fila-son td{
+border:none;
+padding-top:0px;
+font-weight:bold;
+}
+.titulo-seccion{
+font-size:13px;
+margin-bottom:5px;
+border-bottom:1px solid #000;
+display:inline-block;
+}
+.bloque-inferior{
+display:flex;
+justify-content:space-between;
+margin-top:-20px;
+}
+
+
+/* ================================================
+COLUMNA IZQUIERDA
+=============================================== */
+
+.lado-izquierdo{
+width:60%;
+}
+
+/* tabla responsable */
+
+.contacto{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+margin-bottom:10px;
+}
+
+.contacto td{
+border:none;
+padding:2px;
+}
+
+.contacto td:first-child{
+width:200px;
+font-weight:bold;
+}
+
+
+/* ================================================
+CONDICIONES
+=============================================== */
+
+.condiciones{
+font-size:12px;
+margin-top:10px;
+}
+
+.condiciones h3{
+font-size:13px;
+margin-bottom:5px;
+border-bottom:1px solid #000;
+display:inline-block;
+}
+
+.condiciones p{
+margin:-2px 0;
+}
+
+
+/* ================================================
+COLUMNA DERECHA (TOTALES)
+=============================================== */
+
+.lado-derecho{
+width:30%;
+}
+
+/* tabla totales */
+
+.totales{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+margin-bottom:25px;
+}
+
+.totales td{
+border:1px solid #000;
+padding:6px;
+}
+
+.totales tr:last-child td{
+font-weight:bold;
+font-size:13px;
+}
+
+
+/* ================================================
+FIRMA Y FECHA (DEBAJO DE TOTALES)
+=============================================== */
+
+.firma{
+margin-top:60px;
+border-top:1px solid #000;
+text-align:center;
+padding-top:5px;
+}
+
+.fecha{
+margin-top:10px;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================================================
+ENCABEZADO
+================================================ -->
+
+<div class="encabezado">
+
+<div class="logo">
+<img src="{{ logo_url }}">
+</div>
+
+<div class="datos-empresa">
+<p><strong>REDHUALL SURTIDORES</strong></p>
+<p>CASA MATRIZ</p>
+</div>
+
+</div>
+
+
+<h2>COTIZACIÓN DE VENTAS</h2>
+
+
+<p class="subtitulo">DATOS CLIENTES</p>
+
+
+<!-- ================================================
+DATOS CLIENTE
+================================================ -->
+
+<div class="datos-cliente">
+
+<div class="col-izq">
+<p><strong>Cliente/Empresa:</strong> {{ cliente }}</p>
+<p><strong>Atención:</strong> {{ atencion }}</p>
+<p><strong>Correo:</strong> {{ email }}</p>
+<p><strong>NIT/CI:</strong> {{ nit_ci }}</p>
+<p><strong>Fecha:</strong> {{ fecha }}</p>
+</div>
+
+<div class="col-centro">
+<p><strong>Versión N°:</strong> {{ version }}</p>
+</div>
+
+<div class="col-der">
+<p><strong>Dirección:</strong> {{ direccion }}</p>
+<p><strong>Teléfono:</strong> {{ telefono }}</p>
+<p><strong>Celular:</strong> {{ celular }}</p>
+</div>
+
+</div>
+
+
+<!-- ================================================
+TABLA PRODUCTOS
+================================================ -->
+
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Descripción</th>
+<th>Imagen</th>
+<th>Cantidad</th>
+<th>Precio</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for item in detalles %}
+
+<tr>
+    <td class="center">{{ loop.index }}</td>
+    
+    <td>
+    {{ item.descripcion }}
+
+    {% if item.detalle %}
+    <br>
+    <small style="white-space: pre-line; font-size: 11px; line-height: 1.4;">
+        {{ item.detalle }}
+    </small>
+    {% endif %}
+</td>
+    <td style="text-align: center;">
+    {% if item.imagen %}
+        {% if es_pdf %}
+            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen, _external=True) }}" 
+                 style="width: 80px;">
+        {% else %}
+            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" 
+                 style="width: 80px;">
+        {% endif %}
+    {% endif %}
+</td>
+    <td class="center">{{ item.cantidad }}</td>
+    <td class="num">Bs {{ "%.2f"|format(item.precio) }}</td>
+    <td class="num">Bs {{ "%.2f"|format(item.total) }}</td>
+</tr>
+{% endfor %}
+<tr class="fila-son">
+    <td colspan="6"><strong>SON:</strong> {{ total_literal }}</td>
+</tr>
+</tbody>
+</table>
+<!-- ================================================
+BLOQUE INFERIOR
+================================================ -->
+
+<div class="bloque-inferior">
+
+
+<!-- IZQUIERDA -->
+
+<div class="lado-izquierdo">
+
+<h3 class="titulo-seccion">RESPONSABLE Y CONSULTA</h3>
+
+<table class="contacto">
+
+<tr>
+<td>NOMBRE:</td>
+<td>Ing. Néstor Huallpa</td>
+</tr>
+
+<tr>
+<td>CARGO:</td>
+<td>Gerente Comercial</td>
+</tr>
+
+<tr>
+<td>CELULAR:</td>
+<td>73741891</td>
+</tr>
+
+<tr>
+<td>E-MAIL:</td>
+<td>redhuall@gmail.com</td>
+</tr>
+
+
+</table>
+
+
+<div class="condiciones">
+
+<h3>CONDICIONES</h3>
+
+<p><strong>Tiempo de Validez:</strong> {{ validez }}</p>
+<p><strong>Plazo de Entrega:</strong> {{ plazo_entrega }}</p>
+<p><strong>Forma de Pago:</strong> {{ forma_pago }}</p>
+<p><strong>Observaciones:</strong> {{ observaciones }}</p>
+
+</div>
+
+</div>
+
+
+<!-- DERECHA -->
+
+<div class="lado-derecho">
+
+<table class="totales">
+
+<tr>
+<td>Subtotal</td>
+<td class="num">Bs {{ "%.2f"|format(subtotal) }}</td>
+</tr>
+
+<tr>
+<td>Descuento</td>
+<td class="num">Bs {{ "%.2f"|format(descuento) }}</td>
+</tr>
+
+<tr>
+<td>Total</td>
+<td class="num">Bs {{ "%.2f"|format(total) }}</td>
+</tr>
+
+</table>
+
+
+<div class="firma">
+Firma Responsable
+</div>
+
+<div class="fecha">
+<strong>Fecha de Cotización:</strong><br>
+{{ fecha }}
+</div>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold">✏️ Editar Producto</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="nombre" value="{{ producto.nombre }}" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <input type="number" step="0.01" name="precio" value="{{ producto.precio }}" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <input type="number" name="stock" value="{{ producto.stock }}" class="form-control" required>
+        </div>
+        <div class="col-md-12">
+            <label class="form-label">Imagen actual:</label><br>
+        <div class="col-md-12">
+    <label class="form-label"><strong>Descripción técnica</strong></label>
+    <textarea name="detalle" class="form-control" rows="6"
+              placeholder="Ej: • 2 mangueras 70 LPM...">{{ producto.detalle or '' }}</textarea>
+        </div>
+            {% if producto.imagen %}
+                <img src="{{ url_for('static', filename='uploads/productos/' + producto.imagen) }}"
+                     class="img-thumbnail mb-2"
+                     style="width:100px; height:100px; object-fit:cover;">
+            {% else %}
+                <span class="text-muted">Sin imagen</span>
+            {% endif %}
+            <input type="file" name="imagen" class="form-control">
+        </div>
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a href="{{ url_for('admin_productos') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

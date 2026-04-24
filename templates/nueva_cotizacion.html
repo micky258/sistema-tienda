@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-primary mb-4">Nueva Cotización</h1>
+
+<div class="row">
+  <!-- Productos disponibles -->
+  <div class="col-md-8">
+    <h3>Productos disponibles</h3>
+    <div class="row">
+      {% for producto in productos %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}" 
+               class="card-img-top" alt="{{ producto.nombre }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ producto.nombre }}</h5>
+            <p class="card-text">Precio: Bs {{ producto.precio }}</p>
+            <p class="card-text">Stock: {{ producto.stock }}</p>
+            <input type="number" min="1" max="{{ producto.stock }}" 
+                   id="cantidad_{{ producto.id }}" class="form-control mb-2" placeholder="Cantidad">
+            <button type="button" class="btn btn-success btn-sm w-100"
+                    onclick="agregarProducto({{ producto.id }}, '{{ producto.nombre }}', {{ producto.precio }})">
+              Agregar a Cotización
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Cotización -->
+  <div class="col-md-4">
+    <h3>Detalle de Cotización</h3>
+    <h4 class="mt-3">➕ Producto Manual</h4>
+
+<div class="row">
+  <div class="col-12 mb-2">
+    <input type="text" id="manual_nombre" class="form-control" placeholder="Nombre del producto">
+  </div>
+
+  <div class="col-12 mb-2">
+    <input type="text" id="manual_detalle" class="form-control" placeholder="Descripción">
+  </div>
+
+  <div class="col-6 mb-2">
+    <input type="number" id="manual_precio" class="form-control" placeholder="Precio">
+  </div>
+
+  <div class="col-6 mb-2">
+    <input type="number" id="manual_cantidad" class="form-control" placeholder="Cantidad">
+  </div>
+</div>
+
+<button type="button" class="btn btn-warning w-100 mb-3" onclick="agregarManual()">
+  ➕ Agregar Manual
+</button>
+    <table class="table table-bordered" id="cotizacion">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cant.</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <h4>Total: <span id="total">0</span> Bs</h4>
+  </div>
+</div>
+
+<!-- FORMULARIO -->
+<form method="POST" action="{{ url_for('nueva_cotizacion') }}">
+<input type="hidden" name="productos_json" id="productos_json">
+
+<!-- =========================
+DATOS DEL CLIENTE
+========================= -->
+<h3 class="mt-4">Datos del Cliente</h3>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="mb-3">
+      <label>Nombre o Razón Social</label>
+      <input type="text" name="cliente_nombre" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>NIT / CI</label>
+      <input type="text" name="cliente_nit" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Correo</label>
+      <input type="email" name="cliente_email" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label>Celular</label>
+      <input type="text" name="cliente_celular" class="form-control">
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="mb-3">
+      <label>Dirección</label>
+      <input type="text" name="cliente_direccion" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label>Teléfono</label>
+      <input type="text" name="cliente_telefono" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label>Atención</label>
+      <input type="text" name="cliente_atencion" class="form-control">
+    </div>
+  </div>
+</div>
+
+<!-- =========================
+CONDICIONES
+========================= -->
+<h3 class="mt-4">Condiciones de la Cotización</h3>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="mb-3">
+      <label>Versión</label>
+      <input type="number" name="version" class="form-control" value="1">
+    </div>
+
+    <div class="mb-3">
+      <label>Validez de la oferta</label>
+      <input type="text" name="validez" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label>Plazo de entrega</label>
+      <input type="text" name="plazo_entrega" class="form-control">
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="mb-3">
+      <label>Observaciones</label>
+      <textarea name="observaciones" class="form-control"></textarea>
+    </div>
+  </div>
+</div>
+  <div class="mb-3">
+  <label>Forma de pago</label>
+  <input type="text" name="forma_pago" class="form-control">
+</div>
+
+<button type="submit" class="btn btn-primary mt-3">
+  Guardar Cotización
+</button>
+</form>
+
+<script>
+let cotizacion = [];
+
+// ✅ PRODUCTOS DEL SISTEMA
+function agregarProducto(id, nombre, precio) {
+  let cantidad = parseInt(document.getElementById("cantidad_" + id).value);
+
+  if (!cantidad || cantidad <= 0) {
+    alert("Ingresa una cantidad válida");
+    return;
+  }
+
+  cotizacion.push({
+    id: id,
+    nombre: nombre,
+    precio: precio,
+    cantidad: cantidad,
+    tipo: "producto"
+  });
+
+  renderCotizacion();
+}
+
+// ✅ PRODUCTO MANUAL (FIX REAL 🔥)
+function agregarManual() {
+  let nombre = document.getElementById("manual_nombre").value;
+  let detalle = document.getElementById("manual_detalle").value;
+  let precio = parseFloat(document.getElementById("manual_precio").value);
+  let cantidad = parseInt(document.getElementById("manual_cantidad").value);
+
+  if (!nombre || !precio || !cantidad) {
+    alert("Completa los datos del producto manual");
+    return;
+  }
+
+  cotizacion.push({
+    id: null,
+    nombre: nombre,
+    precio: precio,
+    cantidad: cantidad,
+    detalle: detalle,
+    tipo: "manual"
+  });
+
+  renderCotizacion();
+
+  // limpiar campos
+  document.getElementById("manual_nombre").value = "";
+  document.getElementById("manual_detalle").value = "";
+  document.getElementById("manual_precio").value = "";
+  document.getElementById("manual_cantidad").value = "";
+}
+
+// ✅ ELIMINAR
+function eliminarProducto(index) {
+  cotizacion.splice(index, 1);
+  renderCotizacion();
+}
+
+// ✅ RENDER
+function renderCotizacion() {
+  let tbody = document.querySelector("#cotizacion tbody");
+  tbody.innerHTML = "";
+
+  let total = 0;
+
+  cotizacion.forEach((p, i) => {
+    let subtotal = p.precio * p.cantidad;
+    total += subtotal;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          ${p.nombre}
+          ${p.detalle ? `<br><small>${p.detalle}</small>` : ""}
+        </td>
+        <td>${p.cantidad}</td>
+        <td>${subtotal.toFixed(2)}</td>
+        <td>
+          <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${i})">X</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("total").innerText = total.toFixed(2);
+  document.getElementById("productos_json").value = JSON.stringify(cotizacion);
+}
+
+// ✅ VALIDACIÓN FORM
+document.querySelector("form").addEventListener("submit", function(e) {
+  if (cotizacion.length === 0) {
+    alert("Debes agregar al menos un producto");
+    e.preventDefault();
+    return;
+  }
+
+  document.getElementById("productos_json").value = JSON.stringify(cotizacion);
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Cotizaciones</h2>
+
+<a href="{{ url_for('nueva_cotizacion') }}" class="btn btn-primary mb-3">Nueva Cotización</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Número</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in cotizaciones %}
+        <tr>
+            <td>{{ "%03d"|format(c.numero) }}</td>  <!-- 👈 ahora se muestra como 001, 002, etc -->
+            <td>{{ c.fecha.strftime("%d/%m/%Y") }}</td>
+            <td>{{ c.cliente.nombre if c.cliente else "Cliente no registrado" }}</td>
+            <td>{{ "%.2f"|format(c.total) }}</td>
+            <td>
+                <a href="{{ url_for('ver_cotizacion', cotizacion_id=c.id) }}" class="btn btn-sm btn-info">Ver</a>
+                <a href="{{ url_for('descargar_cotizacion', cotizacion_id=c.id) }}" class="btn btn-sm btn-success">PDF</a>
+                <a href="{{ url_for('facturar_cotizacion', cotizacion_id=c.id) }}" 
+                   class="btn btn-danger btn-sm">
+                   Facturar
+                </a>
+                <form action="{{ url_for('eliminar_cotizacion', cotizacion_id=c.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar esta cotización?');">
+                        🗑 Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

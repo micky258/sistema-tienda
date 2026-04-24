@@ -1,0 +1,46 @@
+/* Fondo general */
+body {
+  background-color: #f8f9fa; /* gris claro */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar corporativa */
+.navbar {
+  background-color: #004d40 !important; /* verde oscuro */
+}
+
+/* Botones principales */
+.btn-primary {
+  background-color: #00796b;
+  border-color: #00796b;
+}
+
+.btn-success {
+  background-color: #388e3c;
+  border-color: #388e3c;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+/* Títulos */
+h2, h4, h5 {
+  color: #004d40;
+}
+
+/* Cards */
+.card {
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+/* Badges */
+.badge {
+  font-size: 0.9rem;
+}

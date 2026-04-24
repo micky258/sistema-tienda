@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Factura</title>
+<style>
+  @page { size: A4; margin: 10px; }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    margin: 5;
+    padding: 0;
+    color: #000;
+  }
+
+  /* Encabezado y logo */
+  .logo {
+    text-align: center;
+    margin-top: 10px;
+  }
+  .logo img {
+    max-width: 160px;
+  }
+
+  /* Encabezado principal */
+  .encabezado {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  .encabezado td {
+    padding: 4px 8px;
+    vertical-align: top;
+    font-size: 10px;
+  }
+  .encabezado .titulo {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .encabezado .subtitulo {
+    text-align: center;
+    font-size: 11px;
+    font-weight: normal;
+  }
+
+  /* Datos del cliente */
+  .datos-cliente {
+    width: 100%;
+    border: none;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .datos-cliente td {
+    padding: 6px;
+    font-size: 10px;
+  }
+
+  /* Tabla de productos */
+  .productos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .productos th {
+    background-color: #f2f2f2;
+    border: 1px solid #000;
+    padding: 4px;
+    font-size: 9px;
+    text-align: center;
+  }
+  .productos td {
+    border: 1px solid #000;
+    padding: 4px;
+    font-size: 9px;
+  }
+
+  /* Totales */
+  .totales {
+    width: 50%;
+    float: right;
+    margin-top: 10px;
+    border-collapse: collapse;
+  }
+  .totales td {
+    border: 1px solid #000;
+    padding: 4px;
+    font-size: 10px;
+  }
+  .totales td:nth-child(1) {
+    text-align: left;
+  }
+  .totales td:nth-child(2) {
+    text-align: right;
+  }
+
+  /* Son en letras */
+  .son {
+    margin-top: 100px;
+    font-size: 10px;
+  }
+  /* qr leyenda */
+.qr-leyenda {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* evita que se centre verticalmente */
+  margin-top: 25px;        /* empuja hacia abajo */
+  clear: both;             /* asegura que no se superponga con la tabla flotante */
+}
+
+.qr {
+  text-align: center;
+}
+
+.qr img {
+  width: 110px;
+}
+
+.leyenda {
+  font-size: 8px;
+  text-align: justify;
+  margin-left: 15px;
+  flex: 1; /* ocupa el espacio restante */
+}
+.resaltado td {
+      font-weight: bold;
+      background-color: #e6e6e6; /* gris más marcado */
+      border: 1px solid #ccc;
+
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<div class="logo">
+  <img src="{{ logo_url if logo_url is defined else url_for('static', filename='logo.png') }}" />
+</div>
+
+
+<!-- Encabezado -->
+<table class="encabezado">
+  <tr>
+    <td colspan="2" class="titulo">FACTURA</td>
+  </tr>
+  <tr>
+    <td colspan="2" class="subtitulo">(Con Derecho a Crédito Fiscal)</td>
+  </tr>
+  <tr>
+    <td style="width:70%;">
+      <strong>{{ empresa }}</strong><br>
+      CASA MATRIZ<br>
+      Dirección: {{ direccion }}<br>
+      NIT: {{ nit }}
+    </td>
+    <td style="width:30%; text-align:right;">
+      N° {{ numero }}<br>
+      CÓD. AUTORIZACIÓN: {{ cuf }}<br>
+      Fecha: {{ fecha }}
+    </td>
+  </tr>
+</table>
+
+<!-- Datos del cliente -->
+<table class="datos-cliente">
+<tr>
+  <td style="width:70%;"><strong>Razón Social:</strong> {{ cliente }}</td>
+  <td style="width:30%; text-align:right;"><strong>NIT/CI:</strong> {{ nit_ci }}</td>
+</tr>
+<tr>
+  <td></td>
+  <td style="text-align:right;"><strong>Cód. Cliente:</strong> {{ nit_ci }}</td>
+</tr>
+</table>
+
+<!-- Detalle de productos -->
+<table class="productos">
+<thead>
+<tr>
+  <th style="width:10%;">CÓDIGO</th>
+  <th style="width:8%;">CANT.</th>
+  <th style="width:12%;">UNIDAD</th>
+  <th style="width:40%;">DESCRIPCIÓN</th>
+  <th style="width:10%;">P. UNIT.</th>
+  <th style="width:10%;">DESC.</th>
+  <th style="width:10%;">SUBTOTAL</th>
+</tr>
+</thead>
+<tbody>
+{% for detalle in detalles %}
+<tr>
+  <td>{{ detalle.producto.codigo }}</td>
+  <td style="text-align:center;">{{ detalle.cantidad }}</td>
+  <td style="text-align:center;">Unidad</td>
+  <td>{{ detalle.producto.nombre }}</td>
+  <td style="text-align:right;">{{ "%.2f"|format(detalle.precio_unitario) }}</td>
+  <td style="text-align:right;">
+  {{ "%.2f"|format((detalle.precio_unitario * detalle.cantidad) - detalle.subtotal) }}
+  </td>
+  <td style="text-align:right;">{{ "%.2f"|format(detalle.subtotal) }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<!-- Totales -->
+<table class="totales">
+<tr>
+  <td>SUBTOTAL Bs</td>
+  <td>{{ "%.2f"|format(total) }}</td>
+</tr>
+<tr>
+  <td>DESCUENTO Bs</td>
+  <td>{{ "%.2f"|format(factura.descuento) }}</td>
+</tr>
+<tr>
+  <td>MONTO GIFT CARD Bs</td>
+  <td>{{ "%.2f"|format(factura.gift_card) }}</td>
+</tr>
+<tr>
+  <td><strong>TOTAL Bs</strong></td>
+  <td><strong>{{ "%.2f"|format(total) }}</strong></td>
+</tr>
+<tr class="resaltado">
+  <td><strong>MONTO A PAGAR Bs:</strong></td>
+  <td><strong>{{ factura.total }}</strong></td>
+</tr>
+<tr class="resaltado">
+  <td><strong>IMPORTE BASE CRÉDITO FISCAL:</strong></td>
+  <td><strong>{{ factura.total }}</strong></td>
+</tr>
+</table>
+
+<!-- Son en letras -->
+<div class="son">
+  <strong>Son:</strong> {{ total_literal }}
+</div>
+
+
+<div class="qr-leyenda">
+  <div class="leyenda">
+    ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS, EL USO ILÍCITO SERÁ SANCIONADO PENALMENTE DE ACUERDO A LEY<br>
+    Ley N° 453: El proveedor deberá entregar el producto en las modalidades y términos ofertados o convenidos.<br>
+    "Este documento es la Representación Gráfica de un Documento Fiscal Digital emitido en modalidad de facturación en línea"
+  </div>
+  <div class="qr">
+    <img src="{{ qr_url if qr_url is defined else url_for('static', filename='qr_ficticio.png') }}" />
+  </div>
+</div>
+
+
+</body>
+</html>

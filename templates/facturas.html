@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">📑 Facturas - {{ empresa }}</h1>
+        <span class="badge bg-secondary fs-6">NIT: {{ nit }}</span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Número</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Total (Bs)</th>
+                            <th scope="col" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if facturas|length == 0 %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox"></i> No hay facturas registradas
+                            </td>
+                        </tr>
+                        {% else %}
+                        {% for factura in facturas %}
+                        <tr>
+                            <td><strong>{{ factura.numero }}</strong></td>
+                            <td>{{ factura.cliente.nombre }}</td>
+                            <td>{{ factura.fecha.strftime("%d/%m/%Y %H:%M") }}</td>
+                            <td class="text-success fw-bold">{{ "%.2f"|format(factura.total) }}</td>
+                            <td class="text-center">
+                                <a href="{{ url_for('ver_factura', factura_id=factura.id) }}"  
+                                   class="btn btn-outline-info btn-sm me-2">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                                <a href="{{ url_for('descargar_factura', factura_id=factura.id) }}"  
+                                   target="_blank" class="btn btn-outline-secondary btn-sm">
+                                   <i class="bi bi-download"></i> PDF
+                                </a>
+                                <!-- 🔥 BOTÓN ELIMINAR -->
+                                <form action="{{ url_for('eliminar_factura', factura_id=factura.id) }}" 
+                                      method="POST" style="display:inline;">
+        
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">
+                                       <i class="bi bi-trash"></i>
+                                    </button>
+                                 </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

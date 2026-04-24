@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Usamos container-fluid sin padding -->
+<div class="container-fluid mt-3 px-0">
+    <div class="row gx-0">
+
+        <!-- LISTA DE PRODUCTOS -->
+        <div class="col-lg-8 col-md-12">
+            <h2 class="mb-4 text-primary fw-bold">
+                🛒 Punto de Venta - {{ nombre_empresa }}
+            </h2>
+
+            <!-- Grilla de productos -->
+            <div class="row g-3">
+                {% for producto in productos %}
+                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
+                    <div class="card shadow-sm h-100 border-0 animate__animated animate__fadeInUp">
+
+                        {% if producto.imagen %}
+                        <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
+                             class="card-img-top"
+                             style="height:160px; object-fit:cover;"
+                             alt="{{ producto.nombre }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200"
+                             class="card-img-top"
+                             style="height:160px; object-fit:cover;"
+                             alt="Sin imagen">
+                        {% endif %}
+
+                        <div class="card-body text-center d-flex flex-column">
+
+                            <h6 class="fw-bold">{{ producto.nombre }}</h6>
+
+                            <p class="text-success fw-bold fs-5">
+                                Bs {{ producto.precio }}
+                            </p>
+
+                            {% if producto.stock > 2 %}
+                                <span class="badge bg-success mb-2">
+                                    Stock: {{ producto.stock }}
+                                </span>
+                            {% elif producto.stock > 0 %}
+                                <span class="badge bg-warning text-dark mb-2">
+                                    ⚠ Stock Bajo: {{ producto.stock }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger mb-2">
+                                    ❌ Sin Stock
+                                </span>
+                            {% endif %}
+
+                            {% if producto.stock > 0 %}
+                            <form method="POST" class="mt-auto">
+                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                <input type="number"
+                                       name="cantidad"
+                                       min="1"
+                                       max="{{ producto.stock }}"
+                                       class="form-control mb-2 text-center"
+                                       placeholder="Cantidad"
+                                       required>
+                                <button class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-cart-plus"></i> Agregar
+                                </button>
+                            </form>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm w-100 mt-auto" disabled>
+                                    <i class="bi bi-x-circle"></i> No disponible
+                                </button>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- CARRITO -->
+        <div class="col-lg-4 col-md-12 bg-light p-3 rounded shadow-sm">
+            <h4 class="mb-3 fw-bold text-dark">
+                🧾 Carrito de Venta
+            </h4>
+
+            {% if carrito %}
+            <ul class="list-group mb-3 shadow-sm">
+                {% for item in carrito %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ item.nombre }}</strong><br>
+                        <small class="text-muted">
+                            {{ item.cantidad }} x Bs {{ item.precio }}
+                        </small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="fw-bold text-success me-3">
+                            Bs {{ item.subtotal }}
+                        </span>
+                        <form method="POST" action="{{ url_for('eliminar_item', producto_id=item.producto_id) }}">
+                            <button class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="bg-white p-3 rounded shadow-sm mb-3">
+                <h5 class="text-end">
+                    Total:
+                    <span class="text-success fw-bold fs-4">
+                        Bs {{ total }}
+                    </span>
+                </h5>
+            </div>
+
+            <hr>
+
+            <!-- FACTURACIÓN -->
+            <form method="POST" action="{{ url_for('confirmar_factura') }}">
+                <input type="text"
+                       name="nombre"
+                       class="form-control mb-2"
+                       placeholder="Nombre o Razón Social"
+                       required>
+
+                <input type="text"
+                       name="nit_ci"
+                       class="form-control mb-3"
+                       placeholder="NIT / CI"
+                       required>
+                <input type="number"
+                       step="0.01"
+                       name="descuento"
+                       class="form-control mb-3"
+                       placeholder="Descuento Bs (opcional)">
+                <input type="number"
+                       step="0.01"
+                       name="gift_card"
+                       class="form-control mb-3"
+                       placeholder="Monto Gift Card Bs (opcional)">
+                <button class="btn btn-success w-100 fw-bold">
+                    <i class="bi bi-check-circle"></i> Confirmar y Facturar
+                </button>
+            </form>
+
+            {% else %}
+            <div class="alert alert-info text-center">
+                🛒 No hay productos en el carrito.
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
