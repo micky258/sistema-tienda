@@ -9,7 +9,7 @@ from datetime import datetime
 from config_sin import SinConfig
 
 from flask_migrate import Migrate
-from weasyprint import HTML
+#from weasyprint import HTML
 from num2words import num2words
 
 # ---------------- CONVERTIR NÚMERO A LITERAL ----------------
@@ -439,7 +439,7 @@ def descargar_factura(factura_id):
         qr_url=qr_url
     )
 
-    pdf = HTML(string=html).write_pdf()
+   # pdf = HTML(string=html).write_pdf()
 
     # 🔹 Construir nombre profesional del archivo
     fecha_str = factura.fecha.strftime("%Y%m%d")
@@ -668,7 +668,7 @@ def descargar_cotizacion(cotizacion_id):
     )
 
     from flask import request
-    pdf = HTML(string=html, base_url=request.host_url).write_pdf()
+    #pdf = HTML(string=html, base_url=request.host_url).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
     cliente_str = cliente_nombre.replace(" ", "_").upper()
