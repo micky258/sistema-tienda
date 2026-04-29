@@ -9,7 +9,7 @@ from datetime import datetime
 from config_sin import SinConfig
 
 from flask_migrate import Migrate
-#from weasyprint import HTML
+from weasyprint import HTML
 from num2words import num2words
 
 # ---------------- CONVERTIR NÚMERO A LITERAL ----------------
