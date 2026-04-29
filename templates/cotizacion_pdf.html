@@ -251,7 +251,7 @@ ENCABEZADO
 <div class="encabezado">
 
 <div class="logo">
-logo_url = url_for('static', filename='logo.png')
+    <img src="{{ logo_url }}" style="height:70px;">
 </div>
 
 <div class="datos-empresa">
@@ -331,14 +331,14 @@ TABLA PRODUCTOS
 </td>
     <td style="text-align: center;">
     {% if item.imagen %}
-        {% if es_pdf %}
-            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" 
-     style="width: 80px;">
-        {% else %}
-            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" 
-                 style="width: 80px;">
-        {% endif %}
+    {% if es_pdf %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen, _external=True) }}" 
+             style="width: 80px;">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" 
+             style="width: 80px;">
     {% endif %}
+{% endif %}
 </td>
     <td class="center">{{ item.cantidad }}</td>
     <td class="num">Bs {{ "%.2f"|format(item.precio) }}</td>
