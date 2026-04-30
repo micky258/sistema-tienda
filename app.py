@@ -693,8 +693,6 @@ html = render_template(
     logo_url=logo_url,
     es_pdf=True
 )
-
-
     # ✅ Usar dominio público de Render
     pdf = HTML(string=html, base_url="https://tuapp.onrender.com").write_pdf()
 
@@ -706,7 +704,7 @@ html = render_template(
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
-
+D
 
 # ---------------- ELIMINAR COTIZACION ----------------
 @app.route("/eliminar_cotizacion/<int:cotizacion_id>", methods=["POST"])
