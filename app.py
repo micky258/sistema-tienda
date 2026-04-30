@@ -764,12 +764,18 @@ def eliminar_factura(factura_id):
     flash(f"🗑️ Factura N° {factura.numero} eliminada correctamente", "success")
     return redirect(url_for("facturas"))
 #-------------------------------------
-from flask import send_from_directory
+from flask import send_from_directory, abort
 import os
 
 @app.route('/uploads/<path:filename>')
 def uploaded_files(filename):
     uploads_path = os.path.join(app.root_path, 'static', 'uploads', 'productos')
+
+    file_path = os.path.join(uploads_path, filename)
+
+    if not os.path.isfile(file_path):
+        abort(404)  # más correcto que devolver texto
+
     return send_from_directory(uploads_path, filename)
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
