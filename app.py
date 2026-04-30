@@ -631,6 +631,7 @@ def descargar_cotizacion(cotizacion_id):
     total_literal = numero_a_literal(float(cotizacion.total))
     logo_url = url_for('static', filename='logo.png', _external=True)
 
+
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
