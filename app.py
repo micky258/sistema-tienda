@@ -640,7 +640,7 @@ def descargar_cotizacion(cotizacion_id):
     detalles = []
     for d in cotizacion.detalles:
         imagen_url = None
-        if d.imagen:  # si existe nombre de archivo
+        if d.imagen:
             imagen_url = url_for('static', filename=f'uploads/productos/{d.imagen}', _external=True)
 
         detalles.append({
@@ -670,7 +670,7 @@ def descargar_cotizacion(cotizacion_id):
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
         observaciones=cotizacion.observaciones,
-        detalles=detalles,   # 👈 ahora con imagen_url
+        detalles=detalles,   # 👈 solo este
         subtotal=cotizacion.subtotal,
         descuento=cotizacion.descuento,
         total=cotizacion.total,
@@ -679,7 +679,7 @@ def descargar_cotizacion(cotizacion_id):
         es_pdf=True
     )
 
-    # ✅ Forzar base_url con tu dominio público en Render
+    # ✅ Usar dominio público de Render
     pdf = HTML(string=html, base_url="https://tuapp.onrender.com").write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
@@ -690,6 +690,7 @@ def descargar_cotizacion(cotizacion_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
+
 
 # ---------------- ELIMINAR COTIZACION ----------------
 @app.route("/eliminar_cotizacion/<int:cotizacion_id>", methods=["POST"])
