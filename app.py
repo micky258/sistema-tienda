@@ -769,10 +769,8 @@ def eliminar_factura(factura_id):
 #-------------------------------------
 @app.route('/uploads/<path:filename>')
 def uploaded_files(filename):
-    return send_from_directory(
-        os.path.join(app.root_path, 'static/uploads/productos'),
-        filename
-    )
+    uploads_path = os.path.join(app.root_path, 'static', 'uploads', 'productos')
+    return send_from_directory(uploads_path, filename)
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
     with app.app_context():   
