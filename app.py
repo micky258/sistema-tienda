@@ -7,7 +7,6 @@ from models import db, Producto, Cliente, Factura, DetalleFactura, Usuario, Coti
 from sqlalchemy import func
 from datetime import datetime
 from config_sin import SinConfig
-from flask import send_from_directory
 
 from flask_migrate import Migrate
 from weasyprint import HTML
@@ -633,18 +632,18 @@ def descargar_cotizacion(cotizacion_id):
 
     total_literal = numero_a_literal(float(cotizacion.total))
 
-    # URL absoluta para el logo
+    # 🔥 URL absoluta para el logo (esto sí funciona en static)
     logo_url = request.url_root.rstrip('/') + '/static/logo.png'
 
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
-    # 🔥 Construcción correcta de imágenes para PDF
+    # 🔥 Construcción correcta de imágenes usando /uploads
     detalles_pdf = []
     for d in cotizacion.detalles:
         imagen_url = None
         if d.imagen:
-            imagen_url = request.url_root.rstrip('/') + '/static/uploads/productos/' + d.imagen
+            imagen_url = request.url_root.rstrip('/') + '/uploads/' + d.imagen
 
         detalles_pdf.append({
             "descripcion": d.descripcion,
@@ -673,7 +672,6 @@ def descargar_cotizacion(cotizacion_id):
         forma_pago=cotizacion.forma_pago,
         observaciones=cotizacion.observaciones,
 
-        # 👇 ahora usamos la versión corregida
         detalles=detalles_pdf,
 
         subtotal=cotizacion.subtotal,
@@ -683,7 +681,7 @@ def descargar_cotizacion(cotizacion_id):
         logo_url=logo_url
     )
 
-    # 🔥 generación PDF correcta
+    # 🔥 generación PDF
     pdf = HTML(string=html, base_url=request.url_root).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
@@ -694,7 +692,6 @@ def descargar_cotizacion(cotizacion_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
-
 
 # ---------------- ELIMINAR COTIZACION ----------------
 @app.route("/eliminar_cotizacion/<int:cotizacion_id>", methods=["POST"])
@@ -767,6 +764,9 @@ def eliminar_factura(factura_id):
     flash(f"🗑️ Factura N° {factura.numero} eliminada correctamente", "success")
     return redirect(url_for("facturas"))
 #-------------------------------------
+from flask import send_from_directory
+import os
+
 @app.route('/uploads/<path:filename>')
 def uploaded_files(filename):
     uploads_path = os.path.join(app.root_path, 'static', 'uploads', 'productos')
