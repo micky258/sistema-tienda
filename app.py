@@ -624,50 +624,66 @@ def ver_cotizacion(cotizacion_id):
 # ---------------- DESCARGAR COTIZACION PDF ----------------
 @app.route("/descargar_cotizacion/<int:cotizacion_id>")
 def descargar_cotizacion(cotizacion_id):
+    from flask import request
+
     cotizacion = db.session.get(Cotizacion, cotizacion_id)
     if not cotizacion:
         return redirect(url_for("cotizaciones"))
 
     total_literal = numero_a_literal(float(cotizacion.total))
 
-    # URL ABSOLUTA (solo esto es importante)
-    logo_url = url_for('static', filename='logo.png', _external=True)
+    # URL absoluta para el logo
+    logo_url = request.url_root.rstrip('/') + '/static/logo.png'
 
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
+    # 🔥 Construcción correcta de imágenes para PDF
+    detalles_pdf = []
+    for d in cotizacion.detalles:
+        imagen_url = None
+        if d.imagen:
+            imagen_url = request.url_root.rstrip('/') + '/static/uploads/productos/' + d.imagen
+
+        detalles_pdf.append({
+            "descripcion": d.descripcion,
+            "detalle": d.detalle,
+            "cantidad": d.cantidad,
+            "precio": d.precio,
+            "total": d.total,
+            "imagen_url": imagen_url
+        })
+
     html = render_template(
-    "cotizacion_pdf.html",
-    empresa=SinConfig.RAZON_SOCIAL,
-    numero=cotizacion.numero,
-    fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
-    cliente=cliente_nombre,
-    nit_ci=cliente_nit,
-    email=cotizacion.email,
-    celular=cotizacion.celular,
-    telefono=cotizacion.telefono,
-    direccion=cotizacion.direccion,
-    atencion=cotizacion.atencion,
-    version=cotizacion.version,
-    validez=cotizacion.validez,
-    plazo_entrega=cotizacion.plazo_entrega,
-    forma_pago=cotizacion.forma_pago,
-    observaciones=cotizacion.observaciones,
+        "cotizacion_pdf.html",
+        empresa=SinConfig.RAZON_SOCIAL,
+        numero=cotizacion.numero,
+        fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
+        cliente=cliente_nombre,
+        nit_ci=cliente_nit,
+        email=cotizacion.email,
+        celular=cotizacion.celular,
+        telefono=cotizacion.telefono,
+        direccion=cotizacion.direccion,
+        atencion=cotizacion.atencion,
+        version=cotizacion.version,
+        validez=cotizacion.validez,
+        plazo_entrega=cotizacion.plazo_entrega,
+        forma_pago=cotizacion.forma_pago,
+        observaciones=cotizacion.observaciones,
 
-    detalles=cotizacion.detalles,  # 👈 FALTABA ESTO
+        # 👇 ahora usamos la versión corregida
+        detalles=detalles_pdf,
 
-    subtotal=cotizacion.subtotal,
-    descuento=cotizacion.descuento,
-    total=cotizacion.total,
-    total_literal=total_literal,
-    logo_url=logo_url,
-    es_pdf=True
+        subtotal=cotizacion.subtotal,
+        descuento=cotizacion.descuento,
+        total=cotizacion.total,
+        total_literal=total_literal,
+        logo_url=logo_url
     )
-    
 
-    # 🔥 ESTA ES LA CLAVE REAL
-    from flask import request
-    pdf = HTML(string=html, base_url=request.host_url).write_pdf()
+    # 🔥 generación PDF correcta
+    pdf = HTML(string=html, base_url=request.url_root).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
     cliente_str = cliente_nombre.replace(" ", "_").upper()
