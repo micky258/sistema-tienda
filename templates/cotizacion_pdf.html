@@ -330,10 +330,9 @@ TABLA PRODUCTOS
     {% endif %}
 </td>
     <td style="text-align: center;">
-    {% if item.imagen %}
-    <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen, _external=True) }}" 
-         style="width: 80px;">
-{% endif %}
+  {% if item.imagen_url %}
+    <img src="{{ item.imagen_url }}" style="width: 80px;">
+  {% endif %}
 </td>
     <td class="center">{{ item.cantidad }}</td>
     <td class="num">Bs {{ "%.2f"|format(item.precio) }}</td>

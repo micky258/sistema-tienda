@@ -629,47 +629,58 @@ def descargar_cotizacion(cotizacion_id):
         return redirect(url_for("cotizaciones"))
 
     total_literal = numero_a_literal(float(cotizacion.total))
-    logo_url = url_for('static', filename='logo.png', _external=True)
 
+    # ✅ Logo con URL absoluta
+    logo_url = url_for('static', filename='logo.png', _external=True)
 
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
+    # ✅ Construir lista de detalles con URL absoluta para cada imagen
+    detalles = []
+    for d in cotizacion.detalles:
+        imagen_url = None
+        if d.imagen:  # si existe nombre de archivo
+            imagen_url = url_for('static', filename=f'uploads/productos/{d.imagen}', _external=True)
+
+        detalles.append({
+            "descripcion": d.descripcion,
+            "detalle": d.detalle,
+            "cantidad": d.cantidad,
+            "precio": d.precio,
+            "total": d.total,
+            "imagen_url": imagen_url
+        })
+
+    # ✅ Renderizar template con logo y detalles corregidos
     html = render_template(
         "cotizacion_pdf.html",
-
         empresa=SinConfig.RAZON_SOCIAL,
         numero=cotizacion.numero,
         fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
-
         cliente=cliente_nombre,
         nit_ci=cliente_nit,
-
-        # 🔥 DATOS REALES (FIX)
         email=cotizacion.email,
         celular=cotizacion.celular,
         telefono=cotizacion.telefono,
         direccion=cotizacion.direccion,
         atencion=cotizacion.atencion,
-
         version=cotizacion.version,
         validez=cotizacion.validez,
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
         observaciones=cotizacion.observaciones,
-
-        detalles=cotizacion.detalles,
+        detalles=detalles,   # 👈 ahora con imagen_url
         subtotal=cotizacion.subtotal,
         descuento=cotizacion.descuento,
         total=cotizacion.total,
         total_literal=total_literal,
-
         logo_url=logo_url,
-        es_pdf=True  # 🔥 IMPORTANTE PARA IMÁGENES
+        es_pdf=True
     )
 
-    from flask import request
-    pdf = HTML(string=html, base_url=request.host_url).write_pdf()
+    # ✅ Forzar base_url con tu dominio público en Render
+    pdf = HTML(string=html, base_url="https://tuapp.onrender.com").write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
     cliente_str = cliente_nombre.replace(" ", "_").upper()
