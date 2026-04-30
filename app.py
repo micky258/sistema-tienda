@@ -629,28 +629,13 @@ def descargar_cotizacion(cotizacion_id):
         return redirect(url_for("cotizaciones"))
 
     total_literal = numero_a_literal(float(cotizacion.total))
+
+    # URL ABSOLUTA (solo esto es importante)
     logo_url = url_for('static', filename='logo.png', _external=True)
 
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
-    # Construir lista de detalles SOLO para el PDF
-    detalles_pdf = []
-    for d in cotizacion.detalles:
-        imagen_url = None
-        if d.imagen:
-            imagen_url = url_for('static', filename=f'uploads/productos/{d.imagen}', _external=True)
-
-        detalles_pdf.append({
-            "descripcion": d.descripcion,
-            "detalle": d.detalle,
-            "cantidad": d.cantidad,
-            "precio": d.precio,
-            "total": d.total,
-            "imagen_url": imagen_url
-        })
-
-    # Renderizar SOLO el PDF con detalles_pdf
     html = render_template(
         "cotizacion_pdf.html",
         empresa=SinConfig.RAZON_SOCIAL,
@@ -668,7 +653,10 @@ def descargar_cotizacion(cotizacion_id):
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
         observaciones=cotizacion.observaciones,
-        detalles=detalles_pdf,   # 👈 solo para PDF
+
+        # 🔥 NO TOCAR ESTO
+        detalles=cotizacion.detalles,
+
         subtotal=cotizacion.subtotal,
         descuento=cotizacion.descuento,
         total=cotizacion.total,
@@ -677,7 +665,9 @@ def descargar_cotizacion(cotizacion_id):
         es_pdf=True
     )
 
-    pdf = HTML(string=html, base_url="https://tuapp.onrender.com").write_pdf()
+    # 🔥 ESTA ES LA CLAVE REAL
+    from flask import request
+    pdf = HTML(string=html, base_url=request.host_url).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
     cliente_str = cliente_nombre.replace(" ", "_").upper()

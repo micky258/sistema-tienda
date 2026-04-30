@@ -329,10 +329,16 @@ TABLA PRODUCTOS
     </small>
     {% endif %}
 </td>
-    <td style="text-align: center;">
-  {% if item.imagen_url %}
-    <img src="{{ item.imagen_url }}" style="width: 80px;">
-  {% endif %}
+<td style="text-align: center;">
+{% if item.imagen %}
+    {% if es_pdf %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen, _external=True) }}" 
+             style="width: 80px;">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" 
+             style="width: 80px;">
+    {% endif %}
+{% endif %}
 </td>
 
     <td class="center">{{ item.cantidad }}</td>
