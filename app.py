@@ -7,6 +7,7 @@ from models import db, Producto, Cliente, Factura, DetalleFactura, Usuario, Coti
 from sqlalchemy import func
 from datetime import datetime
 from config_sin import SinConfig
+from flask import send_from_directory
 
 from flask_migrate import Migrate
 from weasyprint import HTML
@@ -765,6 +766,13 @@ def eliminar_factura(factura_id):
 
     flash(f"🗑️ Factura N° {factura.numero} eliminada correctamente", "success")
     return redirect(url_for("facturas"))
+#-------------------------------------
+@app.route('/uploads/<path:filename>')
+def uploaded_files(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, 'static/uploads/productos'),
+        filename
+    )
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
     with app.app_context():   
