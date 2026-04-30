@@ -652,32 +652,48 @@ def descargar_cotizacion(cotizacion_id):
             "imagen_url": imagen_url
         })
 
-    # ✅ Renderizar template con logo y detalles corregidos
-    html = render_template(
-        "cotizacion_pdf.html",
-        empresa=SinConfig.RAZON_SOCIAL,
-        numero=cotizacion.numero,
-        fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
-        cliente=cliente_nombre,
-        nit_ci=cliente_nit,
-        email=cotizacion.email,
-        celular=cotizacion.celular,
-        telefono=cotizacion.telefono,
-        direccion=cotizacion.direccion,
-        atencion=cotizacion.atencion,
-        version=cotizacion.version,
-        validez=cotizacion.validez,
-        plazo_entrega=cotizacion.plazo_entrega,
-        forma_pago=cotizacion.forma_pago,
-        observaciones=cotizacion.observaciones,
-        detalles=detalles,   # 👈 solo este
-        subtotal=cotizacion.subtotal,
-        descuento=cotizacion.descuento,
-        total=cotizacion.total,
-        total_literal=total_literal,
-        logo_url=logo_url,
-        es_pdf=True
-    )
+    # Construir lista de detalles SOLO para el PDF
+detalles_pdf = []
+for d in cotizacion.detalles:
+    imagen_url = None
+    if d.imagen:
+        imagen_url = url_for('static', filename=f'uploads/productos/{d.imagen}', _external=True)
+
+    detalles_pdf.append({
+        "descripcion": d.descripcion,
+        "detalle": d.detalle,
+        "cantidad": d.cantidad,
+        "precio": d.precio,
+        "total": d.total,
+        "imagen_url": imagen_url
+    })
+
+html = render_template(
+    "cotizacion_pdf.html",
+    empresa=SinConfig.RAZON_SOCIAL,
+    numero=cotizacion.numero,
+    fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
+    cliente=cliente_nombre,
+    nit_ci=cliente_nit,
+    email=cotizacion.email,
+    celular=cotizacion.celular,
+    telefono=cotizacion.telefono,
+    direccion=cotizacion.direccion,
+    atencion=cotizacion.atencion,
+    version=cotizacion.version,
+    validez=cotizacion.validez,
+    plazo_entrega=cotizacion.plazo_entrega,
+    forma_pago=cotizacion.forma_pago,
+    observaciones=cotizacion.observaciones,
+    detalles=detalles_pdf,   # 👈 solo para el PDF
+    subtotal=cotizacion.subtotal,
+    descuento=cotizacion.descuento,
+    total=cotizacion.total,
+    total_literal=total_literal,
+    logo_url=logo_url,
+    es_pdf=True
+)
+
 
     # ✅ Usar dominio público de Render
     pdf = HTML(string=html, base_url="https://tuapp.onrender.com").write_pdf()
