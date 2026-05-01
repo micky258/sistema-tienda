@@ -476,7 +476,6 @@ def nueva_cotizacion():
         # =========================
         # CONDICIONES
         # =========================
-        version = request.form.get("version") or 1
         validez = request.form.get("validez")
         plazo_entrega = request.form.get("plazo_entrega")
         forma_pago = request.form.get("forma_pago")
@@ -494,7 +493,14 @@ def nueva_cotizacion():
         # =========================
         # NUMERO COTIZACION
         # =========================
-        numero_cotizacion = (db.session.query(func.max(Cotizacion.numero)).scalar() or 0) + 1
+        ultima = db.session.query(Cotizacion).order_by(Cotizacion.id.desc()).first()
+
+        if ultima and ultima.numero:
+            nuevo_numero = int(ultima.numero) + 1
+        else:
+            nuevo_numero = 1
+
+        numero_cotizacion = str(nuevo_numero).zfill(4)
 
         # =========================
         # PRODUCTOS
@@ -521,7 +527,6 @@ def nueva_cotizacion():
             direccion=direccion,
             telefono=telefono,
             atencion=atencion,
-            version=version,
             validez=validez,
             plazo_entrega=plazo_entrega,
             forma_pago=forma_pago,
@@ -606,7 +611,6 @@ def ver_cotizacion(cotizacion_id):
         direccion=cotizacion.direccion,
         atencion=cotizacion.atencion,
 
-        version=cotizacion.version,
         validez=cotizacion.validez,
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
@@ -632,18 +636,18 @@ def descargar_cotizacion(cotizacion_id):
 
     total_literal = numero_a_literal(float(cotizacion.total))
 
-    # 🔥 URL absoluta para el logo (esto sí funciona en static)
+    # URL absoluta para el logo
     logo_url = request.url_root.rstrip('/') + '/static/logo.png'
 
     cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
     cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
 
-    # 🔥 Construcción correcta de imágenes usando /uploads
+    # 🔥 DETALLES CORRECTOS
     detalles_pdf = []
     for d in cotizacion.detalles:
         imagen_url = None
         if d.imagen:
-            imagen_url = request.url_root.rstrip('/') + '/uploads/' + d.imagen
+            imagen_url = request.url_root.rstrip('/') + '/static/uploads/productos/' + d.imagen
 
         detalles_pdf.append({
             "descripcion": d.descripcion,
@@ -651,6 +655,7 @@ def descargar_cotizacion(cotizacion_id):
             "cantidad": d.cantidad,
             "precio": d.precio,
             "total": d.total,
+            "imagen": d.imagen,
             "imagen_url": imagen_url
         })
 
@@ -666,7 +671,6 @@ def descargar_cotizacion(cotizacion_id):
         telefono=cotizacion.telefono,
         direccion=cotizacion.direccion,
         atencion=cotizacion.atencion,
-        version=cotizacion.version,
         validez=cotizacion.validez,
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
@@ -678,10 +682,10 @@ def descargar_cotizacion(cotizacion_id):
         descuento=cotizacion.descuento,
         total=cotizacion.total,
         total_literal=total_literal,
-        logo_url=logo_url
+        logo_url=logo_url,
+        es_pdf=True
     )
 
-    # 🔥 generación PDF
     pdf = HTML(string=html, base_url=request.url_root).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")

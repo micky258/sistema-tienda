@@ -91,7 +91,7 @@ class Cotizacion(db.Model):
     __tablename__ = "cotizaciones"
 
     id = db.Column(db.Integer, primary_key=True)
-    numero = db.Column(db.Integer, nullable=False)
+    numero = db.Column(db.String(10), unique=True, nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     cliente_id = db.Column(db.Integer, db.ForeignKey("clientes.id"), nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
@@ -102,7 +102,6 @@ class Cotizacion(db.Model):
     celular = db.Column(db.String(50))
     direccion = db.Column(db.String(200))
     atencion = db.Column(db.String(120))
-    version = db.Column(db.Integer, default=1)
     validez = db.Column(db.String(100))
     plazo_entrega = db.Column(db.String(100))
     forma_pago = db.Column(db.String(100))

@@ -282,14 +282,13 @@ DATOS CLIENTE
 <p><strong>Fecha:</strong> {{ fecha }}</p>
 </div>
 
-<div class="col-centro">
-<p><strong>Versión N°:</strong> {{ version }}</p>
-</div>
+
 
 <div class="col-der">
 <p><strong>Dirección:</strong> {{ direccion }}</p>
 <p><strong>Teléfono:</strong> {{ telefono }}</p>
 <p><strong>Celular:</strong> {{ celular }}</p>
+<strong>N° DE COTIZACIÓN:</strong> {{ numero.zfill(4) }}
 </div>
 
 </div>
@@ -330,14 +329,18 @@ TABLA PRODUCTOS
     {% endif %}
 </td>
 <td style="text-align: center;">
-{% if item.imagen_url %}
-    <img src="{{ item.imagen_url }}" style="width: 80px;">
+{% if item.imagen %}
+    {% if es_pdf %}
+        <img src="{{ item.imagen_url }}" style="width: 80px;">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" style="width: 80px;">
+    {% endif %}
 {% endif %}
 </td>
 
     <td class="center">{{ item.cantidad }}</td>
-    <td class="num">Bs {{ "%.2f"|format(item.precio) }}</td>
-    <td class="num">Bs {{ "%.2f"|format(item.total) }}</td>
+    <td class="num">Bs {{ "{:,.2f}".format(item.precio) }}</td>
+    <td class="num">Bs {{ "{:,.2f}".format(item.total) }}</td>
 </tr>
 {% endfor %}
 <tr class="fila-son">
@@ -406,17 +409,17 @@ BLOQUE INFERIOR
 
 <tr>
 <td>Subtotal</td>
-<td class="num">Bs {{ "%.2f"|format(subtotal) }}</td>
+<td class="num">Bs {{ "{:,.2f}".format(subtotal) }}</td>
 </tr>
 
 <tr>
 <td>Descuento</td>
-<td class="num">Bs {{ "%.2f"|format(descuento) }}</td>
+<td class="num">Bs {{ "{:,.2f}".format(descuento) }}</td>
 </tr>
 
 <tr>
 <td>Total</td>
-<td class="num">Bs {{ "%.2f"|format(total) }}</td>
+<td class="num">Bs {{ "{:,.2f}".format(total) }}</td>
 </tr>
 
 </table>

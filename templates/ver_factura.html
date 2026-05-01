@@ -192,11 +192,11 @@
   <td style="text-align:center;">{{ detalle.cantidad }}</td>
   <td style="text-align:center;">Unidad</td>
   <td>{{ detalle.producto.nombre }}</td>
-  <td style="text-align:right;">{{ "%.2f"|format(detalle.precio_unitario) }}</td>
-  <td style="text-align:right;">
-  {{ "%.2f"|format((detalle.precio_unitario * detalle.cantidad) - detalle.subtotal) }}
-  </td>
-  <td style="text-align:right;">{{ "%.2f"|format(detalle.subtotal) }}</td>
+  <td style="text-align:right;">{{ "{:,.2f}".format(detalle.precio_unitario) }}</td>
+<td style="text-align:right;">
+{{ "{:,.2f}".format((detalle.precio_unitario * detalle.cantidad) - detalle.subtotal) }}
+</td>
+<td style="text-align:right;">{{ "{:,.2f}".format(detalle.subtotal) }}</td>
 </tr>
 {% endfor %}
 </tbody>
@@ -206,27 +206,27 @@
 <table class="totales">
 <tr>
   <td>SUBTOTAL Bs</td>
-  <td>{{ "%.2f"|format(total) }}</td>
+  <td>{{ "{:,.2f}".format(total) }}</td>
 </tr>
 <tr>
   <td>DESCUENTO Bs</td>
-  <td>{{ "%.2f"|format(factura.descuento) }}</td>
+  <td>{{ "{:,.2f}".format(factura.descuento) }}</td>
 </tr>
 <tr>
   <td>MONTO GIFT CARD Bs</td>
-  <td>{{ "%.2f"|format(factura.gift_card) }}</td>
+  <td>{{ "{:,.2f}".format(factura.gift_card) }}</td>
 </tr>
 <tr>
   <td><strong>TOTAL Bs</strong></td>
-  <td><strong>{{ "%.2f"|format(total) }}</strong></td>
+  <td><strong>{{ "{:,.2f}".format(total) }}</strong></td>
 </tr>
 <tr class="resaltado">
   <td><strong>MONTO A PAGAR Bs:</strong></td>
-  <td><strong>{{ factura.total }}</strong></td>
+  <td><strong>{{ "{:,.2f}".format(factura.total) }}</strong></td>
 </tr>
 <tr class="resaltado">
   <td><strong>IMPORTE BASE CRÉDITO FISCAL:</strong></td>
-  <td><strong>{{ factura.total }}</strong></td>
+  <td><strong>{{ "{:,.2f}".format(factura.total) }}</strong></td>
 </tr>
 </table>
 

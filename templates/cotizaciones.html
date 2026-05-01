@@ -17,7 +17,7 @@
     <tbody>
         {% for c in cotizaciones %}
         <tr>
-            <td>{{ "%03d"|format(c.numero) }}</td>  <!-- 👈 ahora se muestra como 001, 002, etc -->
+            <td>{{ c.numero }}</td>  <!-- 👈 ahora se muestra como 001, 002, etc -->
             <td>{{ c.fecha.strftime("%d/%m/%Y") }}</td>
             <td>{{ c.cliente.nombre if c.cliente else "Cliente no registrado" }}</td>
             <td>{{ "%.2f"|format(c.total) }}</td>
