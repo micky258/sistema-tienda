@@ -6,3 +6,4 @@ gunicorn==25.3.0
 python-dotenv==1.2.2
 num2words==0.5.14
 weasyprint==68.1
+psycopg2-binary==2.9.10
