@@ -628,46 +628,46 @@ def ver_cotizacion(cotizacion_id):
 # ---------------- DESCARGAR COTIZACION PDF ----------------
 @app.route("/descargar_cotizacion/<int:cotizacion_id>")
 def descargar_cotizacion(cotizacion_id):
-    from flask import request, url_for
 
     cotizacion = db.session.get(Cotizacion, cotizacion_id)
-    
+
     if not cotizacion:
         return redirect(url_for("cotizaciones"))
 
     total_literal = numero_a_literal(float(cotizacion.total))
 
-    # Logo
-    logo_url = url_for(
-        "static",
-        filename="logo.png",
-        _external=True
-    )
+    # ruta base física del proyecto
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+
+    # logo local
+    logo_url = os.path.join(base_dir, "static", "logo.png")
 
     cliente_nombre = (
         cotizacion.cliente.nombre
-        if cotizacion.cliente
-        else "Cliente no registrado"
+        if cotizacion.cliente else "Cliente no registrado"
     )
 
     cliente_nit = (
         cotizacion.cliente.nit_ci
-        if cotizacion.cliente
-        else ""
+        if cotizacion.cliente else ""
     )
 
-    # Productos con imágenes
     detalles_pdf = []
 
     for d in cotizacion.detalles:
-        imagen_url = None
+        imagen_path = None
 
         if d.imagen:
-            imagen_url = (
-                request.url_root.rstrip("/")
-                + "/uploads/"
-                + d.imagen
+            ruta_imagen = os.path.join(
+                base_dir,
+                "static",
+                "uploads",
+                "productos",
+                d.imagen
             )
+
+            if os.path.exists(ruta_imagen):
+                imagen_path = ruta_imagen
 
         detalles_pdf.append({
             "descripcion": d.descripcion,
@@ -676,7 +676,7 @@ def descargar_cotizacion(cotizacion_id):
             "precio": d.precio,
             "total": d.total,
             "imagen": d.imagen,
-            "imagen_url": imagen_url
+            "imagen_url": imagen_path
         })
 
     html = render_template(
@@ -704,10 +704,9 @@ def descargar_cotizacion(cotizacion_id):
         es_pdf=True
     )
 
-    # Generar PDF
     pdf = HTML(
         string=html,
-        base_url=request.url_root
+        base_url=base_dir
     ).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
