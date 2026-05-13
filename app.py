@@ -628,26 +628,46 @@ def ver_cotizacion(cotizacion_id):
 # ---------------- DESCARGAR COTIZACION PDF ----------------
 @app.route("/descargar_cotizacion/<int:cotizacion_id>")
 def descargar_cotizacion(cotizacion_id):
-    from flask import request
+    from flask import request, url_for
 
     cotizacion = db.session.get(Cotizacion, cotizacion_id)
+    
     if not cotizacion:
         return redirect(url_for("cotizaciones"))
 
     total_literal = numero_a_literal(float(cotizacion.total))
 
-    # URL absoluta para el logo
-    logo_url = request.url_root.rstrip('/') + '/static/logo.png'
+    # Logo
+    logo_url = url_for(
+        "static",
+        filename="logo.png",
+        _external=True
+    )
 
-    cliente_nombre = cotizacion.cliente.nombre if cotizacion.cliente else "Cliente no registrado"
-    cliente_nit = cotizacion.cliente.nit_ci if cotizacion.cliente else ""
+    cliente_nombre = (
+        cotizacion.cliente.nombre
+        if cotizacion.cliente
+        else "Cliente no registrado"
+    )
 
-    # 🔥 DETALLES CORRECTOS
+    cliente_nit = (
+        cotizacion.cliente.nit_ci
+        if cotizacion.cliente
+        else ""
+    )
+
+    # Productos con imágenes
     detalles_pdf = []
+
     for d in cotizacion.detalles:
         imagen_url = None
+
         if d.imagen:
-            imagen_url = request.url_root.rstrip('/') + '/static/uploads/productos/' + d.imagen
+            imagen_url = (
+                request.url_root.rstrip("/")
+                + "/uploads/"
+                + d.imagen
+            )
 
         detalles_pdf.append({
             "descripcion": d.descripcion,
@@ -675,9 +695,7 @@ def descargar_cotizacion(cotizacion_id):
         plazo_entrega=cotizacion.plazo_entrega,
         forma_pago=cotizacion.forma_pago,
         observaciones=cotizacion.observaciones,
-
         detalles=detalles_pdf,
-
         subtotal=cotizacion.subtotal,
         descuento=cotizacion.descuento,
         total=cotizacion.total,
@@ -686,15 +704,28 @@ def descargar_cotizacion(cotizacion_id):
         es_pdf=True
     )
 
-    pdf = HTML(string=html, base_url=request.url_root).write_pdf()
+    # Generar PDF
+    pdf = HTML(
+        string=html,
+        base_url=request.url_root
+    ).write_pdf()
 
     fecha_str = cotizacion.fecha.strftime("%Y%m%d")
     cliente_str = cliente_nombre.replace(" ", "_").upper()
-    filename = f"Cotizacion-REDHUALL-{cotizacion.numero}-{cliente_str}-{fecha_str}.pdf"
+
+    filename = (
+        f"Cotizacion-REDHUALL-"
+        f"{cotizacion.numero}-"
+        f"{cliente_str}-"
+        f"{fecha_str}.pdf"
+    )
 
     response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename={filename}"
+    )
+
     return response
 
 # ---------------- ELIMINAR COTIZACION ----------------
