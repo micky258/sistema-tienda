@@ -30,8 +30,12 @@ def numero_a_literal(numero: float) -> str:
 
 # ---------------- CONFIGURACIÓN APP ----------------
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tienda.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Cargar configuración desde config.py
+app.config.from_object("config.Config")
+
+print("BASE DE DATOS USADA:", app.config["SQLALCHEMY_DATABASE_URI"])
+
 app.secret_key = "supersecretkey"
 
 # Inicializar DB y migraciones
@@ -41,7 +45,6 @@ migrate = Migrate(app, db)
 # 👇 Esto asegura que Flask reconozca tu aplicación
 def create_app():
     return app
-
 # ---------------- CREAR TABLAS ----------------
 with app.app_context():
     db.create_all()
