@@ -815,21 +815,23 @@ def uploaded_files(filename):
 
     return send_from_directory(uploads_path, filename)
 # ---------------- MAIN ----------------
+with app.app_context():
+    db.create_all()
+
+    if not Usuario.query.first():
+        admin = Usuario(username="Nestor", rol="admin")
+        admin.set_password("1234")
+
+        vendedor = Usuario(username="vendedor", rol="vendedor")
+        vendedor.set_password("1234")
+
+        db.session.add(admin)
+        db.session.add(vendedor)
+        db.session.commit()
+
+        print("Usuarios iniciales creados correctamente")
+        
 if __name__ == "__main__":
-    with app.app_context():   
-        db.create_all()
-
-        if not Usuario.query.first():
-            admin = Usuario(username="Nestor", rol="admin")
-            admin.set_password("1234")
-
-            vendedor = Usuario(username="vendedor", rol="vendedor")
-            vendedor.set_password("1234")
-
-            db.session.add(admin)
-            db.session.add(vendedor)
-            db.session.commit()
-
     print("Servidor Flask corriendo en http://127.0.0.1:5000")
     app.run(host="0.0.0.0", port=5000, debug=True)
     
