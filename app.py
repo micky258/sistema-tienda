@@ -686,7 +686,7 @@ def descargar_cotizacion(cotizacion_id):
         "cotizacion_pdf.html",
         empresa=SinConfig.RAZON_SOCIAL,
         numero=cotizacion.numero,
-        fecha=cotizacion.fecha.strftime("%d/%m/%Y %H:%M"),
+        fecha=cotizacion.fecha.strftime("%d/%m/%Y "),
         cliente=cliente_nombre,
         nit_ci=cliente_nit,
         email=cotizacion.email,
