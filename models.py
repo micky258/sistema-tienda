@@ -122,7 +122,7 @@ class DetalleCotizacion(db.Model):
     producto_id = db.Column(db.Integer, db.ForeignKey("productos.id"))
     producto = db.relationship("Producto")
 
-    descripcion = db.Column(db.String(200), nullable=False)
+    descripcion = db.Column(db.Text, nullable=False)
     detalle = db.Column(db.Text)
     imagen = db.Column(db.String(200))
 
