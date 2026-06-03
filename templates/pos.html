@@ -18,16 +18,25 @@
                     <div class="card shadow-sm h-100 border-0 animate__animated animate__fadeInUp">
 
                         {% if producto.imagen %}
-                        <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
-                             class="card-img-top"
-                             style="height:160px; object-fit:cover;"
-                             alt="{{ producto.nombre }}">
-                        {% else %}
-                        <img src="https://via.placeholder.com/300x200"
-                             class="card-img-top"
-                             style="height:160px; object-fit:cover;"
-                             alt="Sin imagen">
-                        {% endif %}
+
+    {% if producto.imagen.startswith('http') %}
+        <img src="{{ producto.imagen }}"
+             class="card-img-top"
+             style="height:160px; object-fit:cover;"
+             alt="{{ producto.nombre }}">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
+             class="card-img-top"
+             style="height:160px; object-fit:cover;"
+             alt="{{ producto.nombre }}">
+    {% endif %}
+
+{% else %}
+    <img src="https://via.placeholder.com/300x200"
+         class="card-img-top"
+         style="height:160px; object-fit:cover;"
+         alt="Sin imagen">
+{% endif %}
 
                         <div class="card-body text-center d-flex flex-column">
 

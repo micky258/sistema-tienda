@@ -1,6 +1,8 @@
 import os
 import io
 import math
+import cloudinary
+import cloudinary.uploader
 
 from flask import Flask, Response, make_response, render_template, request, redirect, url_for, session
 from models import db, Producto, Cliente, Factura, DetalleFactura, Usuario, Cotizacion, DetalleCotizacion
@@ -33,6 +35,13 @@ app = Flask(__name__)
 
 # Cargar configuración desde config.py
 app.config.from_object("config.Config")
+
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 print("BASE DE DATOS USADA:", app.config["SQLALCHEMY_DATABASE_URI"])
 
@@ -121,12 +130,14 @@ def productos():
 
         imagen_file = request.files.get("imagen")
         imagen_nombre = None
+
         if imagen_file and imagen_file.filename != "":
-            upload_folder = os.path.join("static", "uploads", "productos")
-            os.makedirs(upload_folder, exist_ok=True)
-            ruta = os.path.join(upload_folder, imagen_file.filename)
-            imagen_file.save(ruta)
-            imagen_nombre = imagen_file.filename
+            resultado = cloudinary.uploader.upload(
+                imagen_file,
+                folder="productos"
+            )
+
+            imagen_nombre = resultado["secure_url"]
 
         nuevo = Producto(nombre=nombre, precio=precio, stock=stock, imagen=imagen_nombre)
         db.session.add(nuevo)
@@ -162,12 +173,14 @@ def editar_producto(id):
         producto.detalle = request.form.get("detalle")
 
         imagen_file = request.files.get("imagen")
+
         if imagen_file and imagen_file.filename != "":
-            upload_folder = os.path.join("static", "uploads", "productos")
-            os.makedirs(upload_folder, exist_ok=True)
-            ruta = os.path.join(upload_folder, imagen_file.filename)
-            imagen_file.save(ruta)
-            producto.imagen = imagen_file.filename
+            resultado = cloudinary.uploader.upload(
+                imagen_file,
+                folder="productos"
+            )
+
+            producto.imagen = resultado["secure_url"]
 
         db.session.commit()
         return redirect(url_for("admin_productos"))

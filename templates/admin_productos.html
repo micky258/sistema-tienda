@@ -31,13 +31,20 @@
                         <td>{{ p.id }}</td>
                         <td>
                             {% if p.imagen %}
-                                <img src="{{ url_for('static', filename='uploads/productos/' + p.imagen) }}"
-                                     alt="{{ p.nombre }}"
-                                     class="img-thumbnail"
-                                     style="width: 60px; height: 60px; object-fit: cover;">
-                            {% else %}
-                                <span class="text-muted">Sin imagen</span>
-                            {% endif %}
+    {% if p.imagen.startswith('http') %}
+        <img src="{{ p.imagen }}"
+             alt="{{ p.nombre }}"
+             class="img-thumbnail"
+             style="width: 60px; height: 60px; object-fit: cover;">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' + p.imagen) }}"
+             alt="{{ p.nombre }}"
+             class="img-thumbnail"
+             style="width: 60px; height: 60px; object-fit: cover;">
+    {% endif %}
+{% else %}
+    <span class="text-muted">Sin imagen</span>
+{% endif %}
                         </td>
                         <td>{{ p.nombre }}</td>
                         <td class="fw-bold text-success">Bs {{ "%.2f"|format(p.precio) }}</td>
