@@ -10,8 +10,15 @@
       {% for producto in productos %}
       <div class="col-md-4 mb-4">
         <div class="card h-100">
-          <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}" 
-               class="card-img-top" alt="{{ producto.nombre }}">
+          {% if producto.imagen.startswith('http') %}
+    <img src="{{ producto.imagen }}"
+         class="card-img-top"
+         alt="{{ producto.nombre }}">
+{% else %}
+    <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
+         class="card-img-top"
+         alt="{{ producto.nombre }}">
+{% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ producto.nombre }}</h5>
             <p class="card-text">Precio: Bs {{ producto.precio }}</p>
