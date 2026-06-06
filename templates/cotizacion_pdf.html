@@ -330,11 +330,19 @@ TABLA PRODUCTOS
 </td>
 <td style="text-align: center;">
 {% if item.imagen %}
+
     {% if es_pdf %}
         <img src="{{ item.imagen_url }}" style="width: 80px;">
     {% else %}
-        <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" style="width: 80px;">
+
+        {% if item.imagen.startswith('http') %}
+            <img src="{{ item.imagen }}" style="width: 80px;">
+        {% else %}
+            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" style="width: 80px;">
+        {% endif %}
+
     {% endif %}
+
 {% endif %}
 </td>
 

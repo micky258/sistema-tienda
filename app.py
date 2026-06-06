@@ -674,16 +674,23 @@ def descargar_cotizacion(cotizacion_id):
         imagen_path = None
 
         if d.imagen:
-            ruta_imagen = os.path.join(
-                base_dir,
-                "static",
-                "uploads",
-                "productos",
-                d.imagen
-            )
 
-            if os.path.exists(ruta_imagen):
-                imagen_path = ruta_imagen
+    # Imagen nueva en Cloudinary
+            if d.imagen.startswith("http"):
+                imagen_path = d.imagen
+
+    # Imagen antigua local
+            else:
+                ruta_imagen = os.path.join(
+                    base_dir,
+                    "static",
+                    "uploads",
+                    "productos",
+                    d.imagen
+                )
+
+                if os.path.exists(ruta_imagen):
+                    imagen_path = ruta_imagen
 
         detalles_pdf.append({
             "descripcion": d.descripcion,
