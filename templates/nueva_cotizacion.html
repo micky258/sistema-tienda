@@ -10,14 +10,21 @@
       {% for producto in productos %}
       <div class="col-md-4 mb-4">
         <div class="card h-100">
-          {% if producto.imagen.startswith('http') %}
-    <img src="{{ producto.imagen }}"
-         class="card-img-top"
-         alt="{{ producto.nombre }}">
+          {% if producto.imagen %}
+    {% if producto.imagen.startswith('http') %}
+        <img src="{{ producto.imagen }}"
+             class="card-img-top"
+             alt="{{ producto.nombre }}">
+    {% else %}
+        <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
+             class="card-img-top"
+             alt="{{ producto.nombre }}">
+    {% endif %}
 {% else %}
-    <img src="{{ url_for('static', filename='uploads/productos/' ~ producto.imagen) }}"
-         class="card-img-top"
-         alt="{{ producto.nombre }}">
+    <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+         style="height: 180px;">
+        <span class="text-muted">Sin imagen</span>
+    </div>
 {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ producto.nombre }}</h5>
