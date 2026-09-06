@@ -9,8 +9,7 @@ app = Flask(__name__)
 # CONFIGURACIÓN
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tienda.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'prueba_migracion.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tienda.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # INICIALIZAR DB
