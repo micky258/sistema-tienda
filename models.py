@@ -9,7 +9,8 @@ app = Flask(__name__)
 # CONFIGURACIÓN
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tienda.db')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tienda.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'prueba_migracion.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # INICIALIZAR DB
@@ -106,6 +107,40 @@ class Cotizacion(db.Model):
     plazo_entrega = db.Column(db.String(100))
     forma_pago = db.Column(db.String(100))
     observaciones = db.Column(db.Text)
+    titulo_cotizacion = db.Column(
+        db.String(200),
+        nullable=False,
+        default="COTIZACIÓN DE VENTA"
+    )
+
+    mostrar_imagenes = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True
+    )
+    responsable_nombre = db.Column(
+        db.String(120),
+        nullable=False,
+        default="Ing. Néstor Huallpa"
+    )
+
+    responsable_cargo = db.Column(
+        db.String(120),
+        nullable=False,
+        default="Gerente Comercial"
+    )
+
+    responsable_celular = db.Column(
+        db.String(50),
+        nullable=False,
+        default="73741891"
+    )
+
+    responsable_email = db.Column(
+        db.String(120),
+        nullable=False,
+        default="redhuall@gmail.com"
+    )
     cliente = db.relationship("Cliente", backref="cotizaciones")
     detalles = db.relationship(
         "DetalleCotizacion",

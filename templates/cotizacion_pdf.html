@@ -262,7 +262,7 @@ ENCABEZADO
 </div>
 
 
-<h2>COTIZACIÓN DE VENTAS</h2>
+<h2>{{ titulo_cotizacion or 'COTIZACIÓN DE VENTA' }}</h2>
 
 
 <p class="subtitulo">DATOS CLIENTES</p>
@@ -288,7 +288,7 @@ DATOS CLIENTE
 <p><strong>Dirección:</strong> {{ direccion }}</p>
 <p><strong>Teléfono:</strong> {{ telefono }}</p>
 <p><strong>Celular:</strong> {{ celular }}</p>
-<strong>N° DE COTIZACIÓN:</strong> {{ numero.zfill(4) }}
+<strong>N° DE COTIZACIÓN:</strong> {{ numero }}
 </div>
 
 </div>
@@ -304,7 +304,9 @@ TABLA PRODUCTOS
 <tr>
 <th>#</th>
 <th>Descripción</th>
+{% if mostrar_imagenes %}
 <th>Imagen</th>
+{% endif %}
 <th>Cantidad</th>
 <th>Precio</th>
 <th>Total</th>
@@ -328,31 +330,30 @@ TABLA PRODUCTOS
     </small>
     {% endif %}
 </td>
+{% if mostrar_imagenes %}
 <td style="text-align: center;">
-{% if item.imagen %}
-
-    {% if es_pdf %}
-        <img src="{{ item.imagen_url }}" style="width: 80px;">
-    {% else %}
-
-        {% if item.imagen.startswith('http') %}
-            <img src="{{ item.imagen }}" style="width: 80px;">
+    {% if item.imagen %}
+        {% if es_pdf %}
+            <img src="{{ item.imagen_url }}" style="width: 80px;">
         {% else %}
-            <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" style="width: 80px;">
+            {% if item.imagen.startswith('http') %}
+                <img src="{{ item.imagen }}" style="width: 80px;">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/productos/' ~ item.imagen) }}" style="width: 80px;">
+            {% endif %}
         {% endif %}
-
     {% endif %}
-
-{% endif %}
 </td>
-
+{% endif %}
     <td class="center">{{ item.cantidad }}</td>
     <td class="num">Bs {{ "{:,.2f}".format(item.precio) }}</td>
     <td class="num">Bs {{ "{:,.2f}".format(item.total) }}</td>
 </tr>
 {% endfor %}
 <tr class="fila-son">
-    <td colspan="6"><strong>SON:</strong> {{ total_literal }}</td>
+    <td colspan="{{ 6 if mostrar_imagenes else 5 }}">
+        <strong>SON:</strong> {{ total_literal }}
+    </td>
 </tr>
 </tbody>
 </table>
@@ -373,28 +374,25 @@ BLOQUE INFERIOR
 
 <tr>
 <td>NOMBRE:</td>
-<td>Ing. Néstor Huallpa</td>
+<td>{{ responsable_nombre }}</td>
 </tr>
 
 <tr>
 <td>CARGO:</td>
-<td>Gerente Comercial</td>
+<td>{{ responsable_cargo }}</td>
 </tr>
 
 <tr>
 <td>CELULAR:</td>
-<td>73741891</td>
+<td>{{ responsable_celular }}</td>
 </tr>
 
 <tr>
 <td>E-MAIL:</td>
-<td>redhuall@gmail.com</td>
+<td>{{ responsable_email }}</td>
 </tr>
 
-
 </table>
-
-
 <div class="condiciones">
 
 <h3>CONDICIONES</h3>
@@ -431,8 +429,6 @@ BLOQUE INFERIOR
 </tr>
 
 </table>
-
-
 <div class="firma">
 Firma Responsable
 </div>
@@ -441,11 +437,7 @@ Firma Responsable
 <strong>Fecha de Cotización:</strong><br>
 {{ fecha }}
 </div>
-
 </div>
-
 </div>
-
-
 </body>
 </html>

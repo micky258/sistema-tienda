@@ -482,7 +482,34 @@ def nueva_cotizacion():
         # =========================
         cliente_nombre = request.form["cliente_nombre"]
         cliente_nit = request.form["cliente_nit"]
+        titulo_cotizacion = request.form.get(
+            "titulo_cotizacion",
+           "COTIZACIÓN DE VENTA"
+        )
 
+        mostrar_imagenes = request.form.get("mostrar_imagenes") == "1"
+        # =========================
+        # RESPONSABLE Y CONSULTA
+        # =========================
+        responsable_nombre = request.form.get(
+            "responsable_nombre",
+            "Ing. Néstor Huallpa"
+        ) 
+
+        responsable_cargo = request.form.get(
+            "responsable_cargo",
+            "Gerente Comercial"
+        )
+
+        responsable_celular = request.form.get(
+            "responsable_celular",
+            "73741891"
+        )
+
+        responsable_email = request.form.get(
+            "responsable_email",
+            "redhuall@gmail.com"
+        )
         email = request.form.get("cliente_email")
         celular = request.form.get("cliente_celular")
         direccion = request.form.get("cliente_direccion")
@@ -546,7 +573,13 @@ def nueva_cotizacion():
             validez=validez,
             plazo_entrega=plazo_entrega,
             forma_pago=forma_pago,
-            observaciones=observaciones
+            observaciones=observaciones,
+            titulo_cotizacion=titulo_cotizacion,
+            mostrar_imagenes=mostrar_imagenes,
+            responsable_nombre=responsable_nombre,
+            responsable_cargo=responsable_cargo,
+            responsable_celular=responsable_celular,
+            responsable_email=responsable_email
         )
 
         db.session.add(cotizacion)
@@ -638,7 +671,13 @@ def ver_cotizacion(cotizacion_id):
         total=cotizacion.total,
         total_literal=total_literal,
 
-        logo_url=url_for('static', filename='logo.png')
+        logo_url=url_for('static', filename='logo.png'),
+        titulo_cotizacion=cotizacion.titulo_cotizacion,
+        mostrar_imagenes=cotizacion.mostrar_imagenes,
+        responsable_nombre=cotizacion.responsable_nombre,
+        responsable_cargo=cotizacion.responsable_cargo,
+        responsable_celular=cotizacion.responsable_celular,
+        responsable_email=cotizacion.responsable_email
     )
 
 # ---------------- DESCARGAR COTIZACION PDF ----------------
@@ -724,7 +763,13 @@ def descargar_cotizacion(cotizacion_id):
         total=cotizacion.total,
         total_literal=total_literal,
         logo_url=logo_url,
-        es_pdf=True
+        es_pdf=True,
+        titulo_cotizacion=cotizacion.titulo_cotizacion,
+        mostrar_imagenes=cotizacion.mostrar_imagenes,
+        responsable_nombre=cotizacion.responsable_nombre,
+        responsable_cargo=cotizacion.responsable_cargo,
+        responsable_celular=cotizacion.responsable_celular,
+        responsable_email=cotizacion.responsable_email
     )
 
     pdf = HTML(
